@@ -1,0 +1,52 @@
+PODS:
+  - CrystDBCipher (0.1.12):
+    - SQLCipher
+  - DarklyEventSource (4.1.1)
+  - Flutter (1.0.0)
+  - flutter_proximiio (1.0.0):
+    - Flutter
+    - Proximiio (= 5.3.0)
+  - Proximiio (5.3.0):
+    - CrystDBCipher
+    - DarklyEventSource
+  - SQLCipher (4.10.0):
+    - SQLCipher/standard (= 4.10.0)
+  - SQLCipher/common (4.10.0)
+  - SQLCipher/standard (4.10.0):
+    - SQLCipher/common
+  - webview_flutter_wkwebview (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_proximiio (from `.symlinks/plugins/flutter_proximiio/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - CrystDBCipher
+    - DarklyEventSource
+    - Proximiio
+    - SQLCipher
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_proximiio:
+    :path: ".symlinks/plugins/flutter_proximiio/ios"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
+
+SPEC CHECKSUMS:
+  CrystDBCipher: 5aa287d612edbc1e596bb90f5aeeedd3a13b7e7a
+  DarklyEventSource: 6df384dcdb211d2b6bfbbe93a3148bd25567dd61
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_proximiio: a32940dba8ca92cd9d188e0ceeb9ac6a27185520
+  Proximiio: 4b48c80a1dc977efb97dfbf48220b424a38c8429
+  SQLCipher: eb79c64049cb002b4e9fcb30edb7979bf4706dfc
+  webview_flutter_wkwebview: 29eb20d43355b48fe7d07113835b9128f84e3af4
+
+PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
+
+COCOAPODS: 1.16.2
