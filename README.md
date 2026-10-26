@@ -64,6 +64,14 @@ When it starts, the app asks for the permissions positioning needs. It then auth
 route network and starts positioning. If you deny location access, allow it in the system settings
 and tap **Start**.
 
+**From an IDE.** In Android Studio or IntelliJ IDEA with the Flutter plugin, the shared run
+configuration `main.dart` (in `.run/`) passes `--dart-define-from-file=env.json`. To run from Xcode,
+first write the values into `ios/Flutter/Generated.xcconfig` (git-ignored):
+
+```bash
+flutter build ios --config-only --debug --dart-define-from-file=env.json
+```
+
 ## Platform notes
 
 **iOS.** The map library ships only as a Swift package. `pubspec.yaml` turns on Flutter's Swift
