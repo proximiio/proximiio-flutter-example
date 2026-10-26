@@ -45,17 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Allow Background Location updates for Event triggering while the App is in background</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Location Updates for basic Proximiio SDK operation</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Allow always usage for permanent positioning support</string>
-	<key>NSMotionUsageDescription</key>
-	<string>Allow motion detection for improved positioning</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Allow bluetooth for improved beacon operation</string>
+	<string>Shows where you are on the venue map.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Keeps finding your position while the app is in the background.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Allow bluetooth for improved beacon operation</string>
+	<string>Uses Bluetooth beacons to find your position indoors.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Uses motion sensors to keep your position steady.</string>
+	<key>NSNearbyInteractionUsageDescription</key>
+	<string>Uses ultra-wideband anchors to find your position indoors.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Uses the camera to improve the direction to ultra-wideband anchors.</string>
 </dict>
 </plist>

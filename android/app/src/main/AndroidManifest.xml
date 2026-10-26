@@ -1,15 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-
+    <!-- The Proximi.io SDK's manifest adds the location, Bluetooth and network permissions. -->
     <application
-        android:label="proximiio_flutter_example"
+        android:label="Proximiio Flutter Example"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
