@@ -6,21 +6,22 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.7.0
-  flutter: ">=3.29.0"
+  # The iOS app uses the UIScene lifecycle (FlutterImplicitEngineDelegate).
+  flutter: ">=3.38.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  # Switch both refs to the 6.0.0-beta.1 tag when it is released. The flutter_proximiio URL and ref
-  # must be the ones flutter_proximiio_map uses, or pub sees two different packages.
+  # The flutter_proximiio URL and ref must be the ones flutter_proximiio_map uses, or pub sees two
+  # different packages.
   flutter_proximiio:
     git:
       url: https://github.com/proximiio/flutter-proximiio
-      ref: v6-migration
+      ref: 6.0.0-beta.1
   flutter_proximiio_map:
     git:
       url: https://github.com/proximiio/flutter-proximiio-map
-      ref: v6-migration
+      ref: 6.0.0-beta.1
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

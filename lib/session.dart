@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_proximiio/flutter_proximiio.dart';
 
+/// The level assumed when a position carries no floor, as GPS fixes do: the ground floor.
+const defaultLevel = 0.0;
+
 /// The app's SDK instance and what it reported last, for the tabs to show.
 class SdkSession extends ChangeNotifier {
   SdkSession({required this.token, this.apiBaseUrl});
@@ -17,6 +20,7 @@ class SdkSession extends ChangeNotifier {
   String? visitorId;
   PositionUpdate? position;
   ProximiioFloor? floor;
+  List<ProximiioFloor> floors = const [];
   final Map<String, ProximiioGeofence> geofencesInside = {};
   final List<String> events = [];
   String? error;
@@ -52,7 +56,17 @@ class SdkSession extends ChangeNotifier {
     } on ProximiioException catch (error) {
       _log('Route network refresh failed: ${error.code.name}');
     }
+    await _loadFloors(sdk);
   });
+
+  /// The floor the visitor is on, as the SDK reports it.
+  ProximiioFloor? get reportedFloor => floor ?? position?.floor;
+
+  /// The floor to show and route from: the reported one, else the venue's floor at [defaultLevel].
+  ProximiioFloor? get currentFloor => reportedFloor ?? floors.where((floor) => floor.level == defaultLevel).firstOrNull;
+
+  /// The level to route from.
+  double get level => reportedFloor?.level ?? defaultLevel;
 
   /// Stops positioning. [connect] starts it again.
   Future<void> stop() => _run(() async {
@@ -94,11 +108,21 @@ class SdkSession extends ChangeNotifier {
       }),
       sdk.venueDataChanges.listen((change) {
         if (change.contains(VenueDataKind.features)) _features = null;
+        if (change.contains(VenueDataKind.floors)) unawaited(_loadFloors(sdk));
       }),
     ]);
     final visitorId = await sdk.visitorId();
     _update(() => this.visitorId = visitorId);
     return sdk;
+  }
+
+  Future<void> _loadFloors(Proximiio sdk) async {
+    try {
+      final floors = await sdk.floors();
+      _update(() => this.floors = floors);
+    } on ProximiioException catch (error) {
+      _log('Loading the floors failed: ${error.code.name}');
+    }
   }
 
   Future<void> _run(Future<void> Function() action) async {

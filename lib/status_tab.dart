@@ -40,7 +40,12 @@ class StatusTab extends StatelessWidget {
               ('Source', position.source.name),
               ('Updated', clock(position.timestamp)),
             ],
-            ('Floor', floorName(session.floor ?? position?.floor)),
+            (
+              'Floor',
+              session.reportedFloor == null
+                  ? '${session.currentFloor?.name ?? 'level ${defaultLevel.round()}'} (default)'
+                  : floorName(session.reportedFloor),
+            ),
           ]),
           _InfoCard('Permissions', [
             if (permissions == null)

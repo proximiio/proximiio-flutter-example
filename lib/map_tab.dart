@@ -56,7 +56,7 @@ class _MapTabState extends State<MapTab> {
     try {
       final route = await map.showRoute(
         from: position.coordinate,
-        fromLevel: position.floor?.level ?? 0,
+        fromLevel: widget.session.level,
         to: destination,
         toLevel: level,
       );

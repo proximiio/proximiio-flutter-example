@@ -2,8 +2,8 @@
 
 An app that shows indoor positioning and the venue map with the Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
-[`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map). Until the
-`6.0.0-beta.1` release, both packages come from their `v6-migration` branches.
+[`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
+`6.0.0-beta.1`.
 
 ## What it shows
 
@@ -11,7 +11,8 @@ An app that shows indoor positioning and the venue map with the Proximi.io Flutt
 
 - The SDK state, with Start and Stop.
 - The application and the visitor ID.
-- The position: coordinate, accuracy, source and floor.
+- The position: coordinate, accuracy, source and floor. A position without a floor, such as a GPS
+  fix, is shown on the ground floor (level 0), and routes start there.
 - The permissions the visitor granted.
 - The geofences the visitor is inside.
 - Recent events: floor changes, geofence and privacy-zone entries and exits.
@@ -27,7 +28,7 @@ An app that shows indoor positioning and the venue map with the Proximi.io Flutt
 
 | Platform | Minimum |
 | --- | --- |
-| Flutter / Dart | Flutter 3.29, Dart 3.7 |
+| Flutter / Dart | Flutter 3.38, Dart 3.10 |
 | iOS | iOS 15, Xcode 16 |
 | Android | minSdk 26, compileSdk 37, Android Gradle Plugin 8.13, Gradle 8.13, Kotlin 2.2, JDK 17 |
 
@@ -61,9 +62,9 @@ flutter:
 `ios/Runner/Info.plist` has the six usage descriptions the SDK requires. App Store validation
 rejects an upload without them.
 
-iOS 27 ends an app at launch when it has not adopted the UIScene lifecycle. This app still uses the
-Flutter app template without scenes, so it runs on iOS 15 to 26. Adopting UIScene needs Flutter
-3.38 or newer.
+The app uses the UIScene lifecycle, which iOS 27 requires: `Info.plist` declares the scene manifest
+with `FlutterSceneDelegate`, and `AppDelegate` registers the plugins in
+`didInitializeImplicitFlutterEngine`. This needs Flutter 3.38 or newer.
 
 **Android.** The SDK's manifest adds the location, Bluetooth and network permissions, so
 `AndroidManifest.xml` declares none. The project's Gradle 8.14 runs on JDK 17 to 24. If
@@ -80,6 +81,13 @@ Simulators and emulators have no Bluetooth, so the position comes from the simul
 
 - iOS Simulator: **Features › Location › Custom Location**.
 - Android Emulator: **Extended controls › Location**.
+
+The map draws the position from the first fix after the map opens. A fixed simulated location sends
+no further fix on iOS, so use a moving one there:
+
+```bash
+xcrun simctl location <device> start --speed=1.4 <lat>,<lng> <lat>,<lng> …
+```
 
 ## Tests
 
