@@ -92,9 +92,8 @@ class _MapTabState extends State<MapTab> {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.session,
     // The map needs the SDK instance from Proximiio.create; it follows its stop() and start().
-    builder:
-        (context, map) =>
-            widget.session.sdk == null ? Center(child: Text(widget.session.error ?? 'Starting the SDK…')) : map!,
+    builder: (context, map) =>
+        widget.session.sdk == null ? Center(child: Text(widget.session.error ?? 'Starting the SDK…')) : map!,
     child: Column(
       children: [
         Expanded(
@@ -138,23 +137,20 @@ class _MapPanel extends StatelessWidget {
             Text(route, style: Theme.of(context).textTheme.titleSmall),
             ValueListenableBuilder(
               valueListenable: map.guidance,
-              builder:
-                  (context, guidance, _) => Text(
-                    guidance == null
-                        ? 'Waiting for guidance…'
-                        : guidance.hasArrived
-                        ? 'You have arrived.'
-                        : guidance.text ?? '${guidance.remainingMeters.round()} m to go',
-                  ),
+              builder: (context, guidance, _) => Text(
+                guidance == null
+                    ? 'Waiting for guidance…'
+                    : guidance.hasArrived
+                    ? 'You have arrived.'
+                    : guidance.text ?? '${guidance.remainingMeters.round()} m to go',
+              ),
             ),
           ],
           ValueListenableBuilder(
             valueListenable: map.lastError,
-            builder:
-                (context, error, _) =>
-                    error == null
-                        ? const SizedBox.shrink()
-                        : Text(error, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            builder: (context, error, _) => error == null
+                ? const SizedBox.shrink()
+                : Text(error, style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ),
           const SizedBox(height: 8),
           Wrap(

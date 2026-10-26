@@ -29,10 +29,9 @@ class _WebTabState extends State<WebTab> {
   @override
   void initState() {
     super.initState();
-    _web =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..loadRequest(widget.url);
+    _web = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(widget.url);
     widget.session.addListener(_onSession);
     // The web app drops positions until its map is ready, and a phone standing still may report no new
     // one, so the last position is sent again every 3 seconds.

@@ -4,7 +4,7 @@ An app that shows indoor positioning and the venue map, native and in a wayfindi
 Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
 [`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
-`6.0.0-beta.1`.
+`6.0.0-beta.2`.
 
 ## What it shows
 
@@ -42,9 +42,9 @@ Proximi.io Flutter SDK v6:
 
 | Platform | Minimum |
 | --- | --- |
-| Flutter / Dart | Flutter 3.38, Dart 3.10 |
+| Flutter / Dart | Flutter 3.44, Dart 3.12 |
 | iOS | iOS 15, Xcode 16 |
-| Android | minSdk 26, compileSdk 37, Android Gradle Plugin 8.13, Gradle 8.13, Kotlin 2.2, JDK 17 |
+| Android | minSdk 26, compileSdk 37, JDK 17 |
 
 You also need an application token from the Proximi.io Portal.
 
@@ -80,16 +80,12 @@ rejects an upload without them.
 
 The app uses the UIScene lifecycle, which iOS 27 requires: `Info.plist` declares the scene manifest
 with `FlutterSceneDelegate`, and `AppDelegate` registers the plugins in
-`didInitializeImplicitFlutterEngine`. This needs Flutter 3.38 or newer.
+`didInitializeImplicitFlutterEngine`.
 
-**Android.** The SDK's manifest adds the location, Bluetooth and network permissions, so
-`AndroidManifest.xml` declares none. The project's Gradle 8.14 runs on JDK 17 to 24. If
-`flutter build apk` fails with a Java version error, for example on the JDK 25 that recent Android
-Studio versions bundle, point Flutter at JDK 17:
-
-```bash
-flutter config --jdk-dir <path to JDK 17>
-```
+**Android.** The Android project is the one `flutter create` makes today (Gradle 9.3, Android Gradle
+Plugin 9.1, Kotlin 2.4), so it builds on the JDK that Android Studio bundles. Only `compileSdk = 37` and
+`minSdk = 26` differ from the template. The SDK's manifest adds the location, Bluetooth and network
+permissions, so `AndroidManifest.xml` declares none.
 
 ## Simulators and emulators
 

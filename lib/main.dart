@@ -73,12 +73,11 @@ class _HomePageState extends State<HomePage> {
     ),
     bottomNavigationBar: NavigationBar(
       selectedIndex: _tab,
-      onDestinationSelected:
-          (tab) => setState(() {
-            _tab = tab;
-            _mapOpened |= tab == 1;
-            _webOpened |= tab == 2;
-          }),
+      onDestinationSelected: (tab) => setState(() {
+        _tab = tab;
+        _mapOpened |= tab == 1;
+        _webOpened |= tab == 2;
+      }),
       destinations: const [
         NavigationDestination(icon: Icon(Icons.my_location), label: 'Position'),
         NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Map'),

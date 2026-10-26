@@ -85,12 +85,11 @@ class _StateCard extends StatelessWidget {
     final changing =
         session.busy || session.state == ProximiioState.starting || session.state == ProximiioState.stopping;
     return Card(
-      color:
-          error != null
-              ? colors.errorContainer
-              : running
-              ? colors.primaryContainer
-              : colors.surfaceContainerHighest,
+      color: error != null
+          ? colors.errorContainer
+          : running
+          ? colors.primaryContainer
+          : colors.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
