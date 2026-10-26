@@ -123,8 +123,8 @@ app, which drops an earlier grant. On the iOS Simulator you can grant it from a 
 soon as the app is installed, before it asks:
 
 ```bash
-until xcrun simctl get_app_container <device> com.example.proximiioFlutterExample >/dev/null 2>&1; do sleep 0.2; done
-xcrun simctl privacy <device> grant location com.example.proximiioFlutterExample
+until xcrun simctl get_app_container <device> io.proximi.flutterExample >/dev/null 2>&1; do sleep 0.2; done
+xcrun simctl privacy <device> grant location io.proximi.flutterExample
 ```
 
 ## Code
