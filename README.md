@@ -1,6 +1,7 @@
 # Proximi.io Flutter example
 
-An app that shows indoor positioning and the venue map with the Proximi.io Flutter SDK v6:
+An app that shows indoor positioning and the venue map, native and in a wayfinding web app, with the
+Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
 [`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
 `6.0.0-beta.1`.
@@ -24,6 +25,19 @@ An app that shows indoor positioning and the venue map with the Proximi.io Flutt
   turn-by-turn guidance.
 - **Recentre**, **Whole venue** and **Clear route**.
 
+**Web tab**
+
+- A Proximi.io wayfinding web app (`PROXIMIIO_WAYFINDING_URL`) in a web view.
+- The app sends each SDK position to the web app as a message on `window`:
+
+  ```js
+  window.postMessage({"type": "SET_LOCATION", "latitude": 48.1486, "longitude": 17.1077, "level": 0}, "*");
+  ```
+
+  `level` is the floor level from the SDK, or 0 when the position has no floor. The web app ignores
+  a message without `level` and handles at most one message every 3 seconds. The app sends the last
+  position again every 3 seconds, so the web app gets it once its map is ready.
+
 ## Requirements
 
 | Platform | Minimum |
@@ -42,7 +56,9 @@ flutter run --dart-define-from-file=env.json
 ```
 
 `env.json` is git-ignored, so the token stays out of version control. Leave `PROXIMIIO_API_BASE_URL`
-empty to use the default API.
+empty to use the default API. `PROXIMIIO_WAYFINDING_URL` is the web app of the Web tab, for example
+`https://maps.proximi.io/<your-app>/`; use the token of the same application, so that both show
+the same venue.
 
 When it starts, the app asks for the permissions positioning needs. It then authenticates, loads the
 route network and starts positioning. If you deny location access, allow it in the system settings
@@ -95,7 +111,8 @@ xcrun simctl location <device> start --speed=1.4 <lat>,<lng> <lat>,<lng> …
 flutter test   # widget test, no SDK needed
 ```
 
-The integration test starts the SDK against the live API, opens the map and stops positioning:
+The integration test starts the SDK against the live API, opens the map and the web app, and stops
+positioning:
 
 ```bash
 flutter test integration_test -d <device> --dart-define-from-file=env.json
@@ -118,5 +135,6 @@ xcrun simctl privacy <device> grant location com.example.proximiioFlutterExample
 | `lib/session.dart` | `SdkSession`: creates the SDK, asks for permissions, authenticates, loads the route network, starts positioning, and keeps what the SDK streams report |
 | `lib/status_tab.dart` | The Position tab |
 | `lib/map_tab.dart` | The Map tab: feature taps, routes, guidance |
+| `lib/web_tab.dart` | The Web tab: the wayfinding web app and the positions sent to it |
 
-The map tab is built when you first open it and is kept afterwards, with its camera and route.
+The Map and Web tabs are built when you first open them and are kept afterwards.

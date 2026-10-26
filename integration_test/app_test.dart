@@ -3,6 +3,7 @@ import 'package:flutter_proximiio_map/flutter_proximiio_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:proximiio_flutter_example/main.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 // Runs against the live API with the token of env.json:
 //   flutter test integration_test -d <device> --dart-define-from-file=env.json
@@ -11,7 +12,7 @@ import 'package:proximiio_flutter_example/main.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('starts positioning, opens the map and stops', (tester) async {
+  testWidgets('starts positioning, opens the map and the web app, and stops', (tester) async {
     await tester.pumpWidget(const ExampleApp());
 
     await _pumpUntil(tester, () => _shown('SDK running') || _error() != null);
@@ -21,6 +22,9 @@ void main() {
     await _pumpUntil(tester, () => _shown('Recentre'));
     expect(find.byType(ProximiioMap), findsOneWidget);
 
+    await tester.tap(find.text('Web'));
+    await _pumpUntil(tester, () => find.byType(WebViewWidget).evaluate().isNotEmpty || _shown(_noWayfindingUrl));
+
     await tester.tap(find.text('Position'));
     await _pumpUntil(tester, () => _shown('Stop'));
     await tester.tap(find.text('Stop'));
@@ -28,6 +32,8 @@ void main() {
     expect(_error(), isNull);
   });
 }
+
+const _noWayfindingUrl = 'No wayfinding URL. Set PROXIMIIO_WAYFINDING_URL in env.json.';
 
 bool _shown(String text) => find.text(text).evaluate().isNotEmpty;
 
