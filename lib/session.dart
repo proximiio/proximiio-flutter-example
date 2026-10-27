@@ -40,6 +40,8 @@ class SdkSession extends ChangeNotifier {
     if (!permissions.isLocationAuthorized) {
       throw const _Failure('Allow location access to see your position, then tap Start.');
     }
+    // The highAccuracy preset fuses PDR, which needs motion; without it positions still arrive.
+    await sdk.requestMotionPermission();
     if (await sdk.state() == ProximiioState.idle) {
       final application = await sdk.authenticate();
       final visitorId = await sdk.visitorId();
@@ -82,7 +84,10 @@ class SdkSession extends ChangeNotifier {
   }
 
   Future<Proximiio> _create() async {
-    final sdk = await Proximiio.create(ProximiioConfiguration(token: token, apiBaseUrl: apiBaseUrl));
+    // highAccuracy: a position every second and PDR between beacon positions, at the cost of battery.
+    final sdk = await Proximiio.create(
+      ProximiioConfiguration(token: token, apiBaseUrl: apiBaseUrl, preset: ConfigurationPreset.highAccuracy),
+    );
     _update(() => this.sdk = sdk);
     _subscriptions.addAll([
       sdk.stateChanges.listen((state) => _update(() => this.state = state)),
