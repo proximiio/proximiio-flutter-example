@@ -4,7 +4,7 @@ An app that shows indoor positioning and the venue map, native and in a wayfindi
 Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
 [`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
-`6.0.0-beta.3`.
+`6.0.0-beta.4`.
 
 ## What it shows
 
@@ -14,9 +14,17 @@ Proximi.io Flutter SDK v6:
 - The application and the visitor ID.
 - The position: coordinate, accuracy, source and floor. A position without a floor, such as a GPS
   fix, is shown on the ground floor (level 0), and routes start there.
+- The direction of walking from the last PDR step.
 - The permissions the visitor granted.
 - The geofences the visitor is inside.
 - Recent events: floor changes, geofence and privacy-zone entries and exits.
+
+**Places tab**
+
+- The venue's points of interest that have a title, with a search field, as an app's own exhibitor
+  list would show them.
+- Tap a place for its details and **Take me there**: the app opens the Web tab and shows the place as
+  the destination (see the Web tab).
 
 **Map tab**
 
@@ -27,7 +35,8 @@ Proximi.io Flutter SDK v6:
 
 **Web tab**
 
-- A Proximi.io wayfinding web app (`PROXIMIIO_WAYFINDING_URL`) in a web view.
+- A Proximi.io wayfinding web app (`PROXIMIIO_WAYFINDING_URL`) in a web view. It loads when the app
+  starts and stays loaded, so it is ready when **Take me there** opens it.
 - The app sends each SDK position to the web app as a message on `window`:
 
   ```js
@@ -35,8 +44,33 @@ Proximi.io Flutter SDK v6:
   ```
 
   `level` is the floor level from the SDK, or 0 when the position has no floor. The web app ignores
-  a message without `level` and handles at most one message every 3 seconds. The app sends the last
+  a message without `level` and handles at most one position every 3 seconds. The app sends the last
   position again every 3 seconds, so the web app gets it once its map is ready.
+- With each step the visitor takes, the app sends the direction of walking from PDR
+  (`pdrObservations`), in degrees clockwise from north, and the web app turns the position marker:
+
+  ```js
+  window.postMessage({"type": "SET_HEADING", "heading": 87.5}, "*");
+  ```
+
+  The web app takes it at once, without the 3-second limit. It ignores a heading of 0, so the app
+  sends north as 360. A standing visitor takes no steps, so the marker keeps the last direction.
+- **Take me there** sends the place's feature id:
+
+  ```js
+  window.postMessage({"type": "SET_DESTINATION", "id": "<feature id>", "start": "current"}, "*");
+  ```
+
+  The web app finds the place by its `id`, `title` or `remote_id`, shows it and centres on it. The
+  visitor then picks **Current Location** as the start (the web app remembers it) and taps **Take me
+  there** in the web app. `start: "current"` asks the web app to route from the visitor's position at
+  once; the web app ignores it until it supports it.
+
+  The web app handles messages only once its map is loaded and says nothing back yet, so the app
+  sends the destination every second until the web app's panel shows the place's title, for at most
+  30 seconds. A web app that posts `{"type": "MAP_READY"}` on the `ProximiioHost` JavaScript channel
+  gets the position, the direction and the destination at once; `DESTINATION_SET` or
+  `DESTINATION_NOT_FOUND` there ends the retries.
 
 **Diagnostics tab**
 
@@ -147,11 +181,12 @@ xcrun simctl privacy <device> grant location io.proximi.flutterExample
 
 | File | Contents |
 | --- | --- |
-| `lib/main.dart` | The app, the token from the build, the four tabs |
-| `lib/session.dart` | `SdkSession`: creates the SDK, starts the diagnostics recording, asks for permissions, authenticates, loads the route network, starts positioning, and keeps what the SDK streams report |
+| `lib/main.dart` | The app, the token from the build, the five tabs, **Take me there** |
+| `lib/session.dart` | `SdkSession`: creates the SDK, starts the diagnostics recording, asks for permissions, authenticates, loads the route network, starts positioning and PDR, and keeps what the SDK streams report |
 | `lib/status_tab.dart` | The Position tab |
+| `lib/places_tab.dart` | The Places tab: the venue's places, their details, **Take me there** |
 | `lib/map_tab.dart` | The Map tab: feature taps, routes, guidance |
-| `lib/web_tab.dart` | The Web tab: the wayfinding web app and the positions sent to it |
+| `lib/web_tab.dart` | `Wayfinding`, the web app in its web view: the positions, the direction and the destination sent to it; the Web tab |
 | `lib/diagnostics_tab.dart` | The Diagnostics tab: the SDK's diagnostics, the beacons in range, the report to share |
 
-The Map and Web tabs are built when you first open them and are kept afterwards.
+The Map tab is built when you first open it and kept afterwards. The web app loads when the app starts.

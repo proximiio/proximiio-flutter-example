@@ -41,6 +41,13 @@ class StatusTab extends StatelessWidget {
               ('Updated', clock(position.timestamp)),
             ],
             (
+              'Heading',
+              switch (session.heading) {
+                final heading? => '${heading.round()}° (from PDR steps)',
+                null => 'No steps yet',
+              },
+            ),
+            (
               'Floor',
               session.reportedFloor == null
                   ? '${session.currentFloor?.name ?? 'level ${defaultLevel.round()}'} (default)'

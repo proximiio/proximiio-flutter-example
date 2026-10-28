@@ -98,6 +98,7 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
                   ? 'on, not running'
                   : 'off',
             ),
+            ('Heading', widget.session.heading == null ? 'No steps yet' : '${widget.session.heading!.round()}°'),
             ('Taken', clock(diagnostics.generatedAt)),
           ],
           if (_error case final error? when diagnostics != null) ('Error', error),

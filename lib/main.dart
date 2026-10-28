@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_proximiio/flutter_proximiio.dart';
 
 import 'diagnostics_tab.dart';
 import 'map_tab.dart';
+import 'places_tab.dart';
 import 'session.dart';
 import 'status_tab.dart';
 import 'web_tab.dart';
@@ -39,55 +41,68 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _session = SdkSession(token: _token, apiBaseUrl: _apiBaseUrl.isEmpty ? null : Uri.parse(_apiBaseUrl));
+  late final Wayfinding? _wayfinding;
   int _tab = 0;
   bool _mapOpened = false;
-  bool _webOpened = false;
+
+  static const _webTab = 3;
+  static const _diagnosticsTab = 4;
 
   @override
   void initState() {
     super.initState();
     unawaited(_session.connect());
+    // The web app loads at once, so it is ready when "Take me there" opens it.
+    _wayfinding = _wayfindingUrl.isEmpty ? null : Wayfinding(session: _session, url: Uri.parse(_wayfindingUrl));
   }
 
   @override
   void dispose() {
+    _wayfinding?.dispose();
     _session.dispose();
     super.dispose();
   }
 
+  void _takeMeThere(ProximiioFeature place) {
+    setState(() => _tab = _webTab);
+    _wayfinding?.showDestination(place);
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Proximi.io example')),
-    // The map and the web app are created when their tab is first opened and then kept.
-    body: IndexedStack(
-      index: _tab,
-      children: [
-        StatusTab(session: _session),
-        if (_mapOpened) MapTab(session: _session) else const SizedBox.shrink(),
-        if (!_webOpened)
-          const SizedBox.shrink()
-        else if (_wayfindingUrl.isEmpty)
-          const _Notice('No wayfinding URL. Set PROXIMIIO_WAYFINDING_URL in env.json.')
-        else
-          WebTab(session: _session, url: Uri.parse(_wayfindingUrl)),
-        DiagnosticsTab(session: _session, active: _tab == 3),
-      ],
-    ),
-    bottomNavigationBar: NavigationBar(
-      selectedIndex: _tab,
-      onDestinationSelected: (tab) => setState(() {
-        _tab = tab;
-        _mapOpened |= tab == 1;
-        _webOpened |= tab == 2;
-      }),
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.my_location), label: 'Position'),
-        NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Map'),
-        NavigationDestination(icon: Icon(Icons.public), label: 'Web'),
-        NavigationDestination(icon: Icon(Icons.troubleshoot), label: 'Diagnostics'),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final wayfinding = _wayfinding;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Proximi.io example')),
+      // The native map is created when its tab is first opened and then kept.
+      body: IndexedStack(
+        index: _tab,
+        children: [
+          StatusTab(session: _session),
+          PlacesTab(session: _session, onTakeMeThere: wayfinding == null ? null : _takeMeThere),
+          if (_mapOpened) MapTab(session: _session) else const SizedBox.shrink(),
+          if (wayfinding == null)
+            const _Notice('No wayfinding URL. Set PROXIMIIO_WAYFINDING_URL in env.json.')
+          else
+            WebTab(wayfinding: wayfinding),
+          DiagnosticsTab(session: _session, active: _tab == _diagnosticsTab),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _tab,
+        onDestinationSelected: (tab) => setState(() {
+          _tab = tab;
+          _mapOpened |= tab == 2;
+        }),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.my_location), label: 'Position'),
+          NavigationDestination(icon: Icon(Icons.storefront_outlined), label: 'Places'),
+          NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Map'),
+          NavigationDestination(icon: Icon(Icons.public), label: 'Web'),
+          NavigationDestination(icon: Icon(Icons.troubleshoot), label: 'Diagnostics'),
+        ],
+      ),
+    );
+  }
 }
 
 class _Notice extends StatelessWidget {

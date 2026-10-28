@@ -19,6 +19,10 @@ class SdkSession extends ChangeNotifier {
   ProximiioApplication? application;
   String? visitorId;
   PositionUpdate? position;
+
+  /// The direction of walking from the last PDR step, in degrees clockwise from north; `null` before the
+  /// first step.
+  double? heading;
   ProximiioFloor? floor;
   List<ProximiioFloor> floors = const [];
   final Map<String, ProximiioGeofence> geofencesInside = {};
@@ -83,11 +87,21 @@ class SdkSession extends ChangeNotifier {
   });
 
   /// The venue feature with [id], from the features the SDK stored.
-  Future<ProximiioFeature?> feature(String id) async {
+  Future<ProximiioFeature?> feature(String id) async => (await _venueFeatures())?[id];
+
+  /// The venue's points of interest that have a title, by title.
+  Future<List<ProximiioFeature>> places() async {
+    final features = await _venueFeatures() ?? const {};
+    return [
+      for (final feature in features.values)
+        if (feature.propertyType == 'poi' && feature.title() != null) feature,
+    ]..sort((a, b) => a.title()!.toLowerCase().compareTo(b.title()!.toLowerCase()));
+  }
+
+  Future<Map<String, ProximiioFeature>?> _venueFeatures() async {
     final sdk = this.sdk;
     if (sdk == null) return null;
-    final features = _features ??= {for (final feature in await sdk.features()) feature.id: feature};
-    return features[id];
+    return _features ??= {for (final feature in await sdk.features()) feature.id: feature};
   }
 
   Future<Proximiio> _create() async {
@@ -106,6 +120,9 @@ class SdkSession extends ChangeNotifier {
       sdk.stateChanges.listen((state) => _update(() => this.state = state)),
       sdk.permissionUpdates.listen((status) => _update(() => permissions = status)),
       sdk.positions.listen((position) => _update(() => this.position = position)),
+      sdk.pdrObservations.listen((step) {
+        if (step.isMoving) _update(() => heading = step.headingDegrees);
+      }),
       sdk.floorChanges.listen((change) {
         _update(() => floor = change.floor);
         _log('Floor ${floorName(change.previousFloor)} → ${floorName(change.floor)}');
