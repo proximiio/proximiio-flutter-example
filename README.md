@@ -4,7 +4,7 @@ An app that shows indoor positioning and the venue map, native and in a wayfindi
 Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
 [`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
-`6.0.0-beta.2`.
+`6.0.0-beta.3`.
 
 ## What it shows
 
@@ -37,6 +37,18 @@ Proximi.io Flutter SDK v6:
   `level` is the floor level from the SDK, or 0 when the position has no floor. The web app ignores
   a message without `level` and handles at most one message every 3 seconds. The app sends the last
   position again every 3 seconds, so the web app gets it once its map is ready.
+
+**Diagnostics tab**
+
+For field tests. It refreshes every second while it is open.
+
+- What the SDK reports about positioning: the source and age of the last position, its accuracy,
+  why there is no position, the beacons in range against the venue's beacons, and whether PDR runs.
+- The venue's beacons in range, strongest first: signal (dBm), transmit power and distance when known,
+  and when each was last seen.
+- **Copy** puts the diagnostics and the beacon list on the clipboard, to paste into a message.
+- **Share report** shares the SDK's diagnostics report: a zip of everything recorded since the app
+  started, without the token. The app starts the recording when it creates the SDK.
 
 ## Requirements
 
@@ -135,10 +147,11 @@ xcrun simctl privacy <device> grant location io.proximi.flutterExample
 
 | File | Contents |
 | --- | --- |
-| `lib/main.dart` | The app, the token from the build, the two tabs |
-| `lib/session.dart` | `SdkSession`: creates the SDK, asks for permissions, authenticates, loads the route network, starts positioning, and keeps what the SDK streams report |
+| `lib/main.dart` | The app, the token from the build, the four tabs |
+| `lib/session.dart` | `SdkSession`: creates the SDK, starts the diagnostics recording, asks for permissions, authenticates, loads the route network, starts positioning, and keeps what the SDK streams report |
 | `lib/status_tab.dart` | The Position tab |
 | `lib/map_tab.dart` | The Map tab: feature taps, routes, guidance |
 | `lib/web_tab.dart` | The Web tab: the wayfinding web app and the positions sent to it |
+| `lib/diagnostics_tab.dart` | The Diagnostics tab: the SDK's diagnostics, the beacons in range, the report to share |
 
 The Map and Web tabs are built when you first open them and are kept afterwards.

@@ -25,6 +25,9 @@ void main() {
     await tester.tap(find.text('Web'));
     await _pumpUntil(tester, () => find.byType(WebViewWidget).evaluate().isNotEmpty || _shown(_noWayfindingUrl));
 
+    await tester.tap(find.text('Diagnostics'));
+    await _pumpUntil(tester, () => _shown('Summary'));
+
     await tester.tap(find.text('Position'));
     await _pumpUntil(tester, () => _shown('Stop'));
     await tester.tap(find.text('Stop'));

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'diagnostics_tab.dart';
 import 'map_tab.dart';
 import 'session.dart';
 import 'status_tab.dart';
@@ -69,6 +70,7 @@ class _HomePageState extends State<HomePage> {
           const _Notice('No wayfinding URL. Set PROXIMIIO_WAYFINDING_URL in env.json.')
         else
           WebTab(session: _session, url: Uri.parse(_wayfindingUrl)),
+        DiagnosticsTab(session: _session, active: _tab == 3),
       ],
     ),
     bottomNavigationBar: NavigationBar(
@@ -82,6 +84,7 @@ class _HomePageState extends State<HomePage> {
         NavigationDestination(icon: Icon(Icons.my_location), label: 'Position'),
         NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Map'),
         NavigationDestination(icon: Icon(Icons.public), label: 'Web'),
+        NavigationDestination(icon: Icon(Icons.troubleshoot), label: 'Diagnostics'),
       ],
     ),
   );

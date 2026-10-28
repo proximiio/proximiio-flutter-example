@@ -22,6 +22,10 @@ class SdkSession extends ChangeNotifier {
   ProximiioFloor? floor;
   List<ProximiioFloor> floors = const [];
   final Map<String, ProximiioGeofence> geofencesInside = {};
+
+  /// The venue's beacons in range, with their last sighting. Updated without notifying: the Diagnostics
+  /// tab reads it once a second.
+  final Map<BeaconIdentifier, BeaconObservation> beacons = {};
   final List<String> events = [];
   String? error;
   bool busy = false;
@@ -40,8 +44,8 @@ class SdkSession extends ChangeNotifier {
     if (!permissions.isLocationAuthorized) {
       throw const _Failure('Allow location access to see your position, then tap Start.');
     }
-    // The highAccuracy preset fuses PDR, which needs motion; without it positions still arrive.
-    await sdk.requestMotionPermission();
+    // PDR needs motion; without it positions still arrive, only less often.
+    final motion = await sdk.requestMotionPermission();
     if (await sdk.state() == ProximiioState.idle) {
       final application = await sdk.authenticate();
       final visitorId = await sdk.visitorId();
@@ -53,6 +57,8 @@ class SdkSession extends ChangeNotifier {
     // Routes work from the stored path network at once; the download below refreshes it.
     await sdk.loadCachedRouteNetwork();
     await sdk.start();
+    // The highAccuracy preset fuses PDR steps into positions, but only once PDR runs.
+    if (motion) await sdk.enablePdr();
     try {
       await sdk.loadRouteNetwork();
     } on ProximiioException catch (error) {
@@ -73,6 +79,7 @@ class SdkSession extends ChangeNotifier {
   /// Stops positioning. [connect] starts it again.
   Future<void> stop() => _run(() async {
     await sdk?.stop();
+    beacons.clear();
   });
 
   /// The venue feature with [id], from the features the SDK stored.
@@ -89,6 +96,12 @@ class SdkSession extends ChangeNotifier {
       ProximiioConfiguration(token: token, apiBaseUrl: apiBaseUrl, preset: ConfigurationPreset.highAccuracy),
     );
     _update(() => this.sdk = sdk);
+    // The Diagnostics tab shares this recording. It starts before authenticate and start, so it covers them too.
+    try {
+      await sdk.startDiagnosticsRecording();
+    } on ProximiioException catch (error) {
+      _log('Diagnostics recording failed: ${error.code.name}');
+    }
     _subscriptions.addAll([
       sdk.stateChanges.listen((state) => _update(() => this.state = state)),
       sdk.permissionUpdates.listen((status) => _update(() => permissions = status)),
@@ -109,6 +122,16 @@ class SdkSession extends ChangeNotifier {
             _log('Entered privacy zone ${zone.name ?? zone.id}; positions are withheld');
           case PrivacyZoneExited(:final zone):
             _log('Left privacy zone ${zone.name ?? zone.id}');
+        }
+      }),
+      sdk.beaconEvents.listen((event) {
+        switch (event) {
+          case BeaconFound(:final observation) || BeaconUpdated(:final observation):
+            beacons[observation.identifier] = observation;
+          case BeaconLost(:final identifier):
+            beacons.remove(identifier);
+          case BeaconTelemetryReceived():
+            break;
         }
       }),
       sdk.venueDataChanges.listen((change) {

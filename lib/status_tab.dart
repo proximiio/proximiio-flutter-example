@@ -20,7 +20,7 @@ class StatusTab extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           _StateCard(session: session),
-          _InfoCard('Visitor', [
+          InfoCard('Visitor', [
             ('Application', session.application?.name ?? session.application?.id ?? '-'),
             (
               'Visitor ID',
@@ -30,7 +30,7 @@ class StatusTab extends StatelessWidget {
               },
             ),
           ]),
-          _InfoCard('Position', [
+          InfoCard('Position', [
             if (position == null)
               ('Position', 'None yet')
             else ...[
@@ -47,7 +47,7 @@ class StatusTab extends StatelessWidget {
                   : floorName(session.reportedFloor),
             ),
           ]),
-          _InfoCard('Permissions', [
+          InfoCard('Permissions', [
             if (permissions == null)
               ('Status', 'Not asked yet')
             else ...[
@@ -57,13 +57,13 @@ class StatusTab extends StatelessWidget {
               ('Motion', permissions.motion.name),
             ],
           ]),
-          _InfoCard('Geofences', [
+          InfoCard('Geofences', [
             (
               'Inside',
               geofences.isEmpty ? 'None' : geofences.map((geofence) => geofence.name ?? geofence.id).join(', '),
             ),
           ]),
-          _InfoCard('Events', [
+          InfoCard('Events', [
             if (session.events.isEmpty) ('', 'None yet') else for (final line in session.events) ('', line),
           ]),
         ],
@@ -114,8 +114,9 @@ class _StateCard extends StatelessWidget {
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  const _InfoCard(this.title, this.rows);
+/// A titled card of label and value rows. A row with an empty label gives the value the whole width.
+class InfoCard extends StatelessWidget {
+  const InfoCard(this.title, this.rows, {super.key});
 
   final String title;
   final List<(String, String)> rows;
