@@ -53,7 +53,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     unawaited(_session.connect());
     // The web app loads at once, so it is ready when "Take me there" opens it.
-    _wayfinding = _wayfindingUrl.isEmpty ? null : Wayfinding(session: _session, url: Uri.parse(_wayfindingUrl));
+    _wayfinding = _wayfindingUrl.isEmpty
+        ? null
+        : Wayfinding(session: _session, url: Uri.parse(_wayfindingUrl), onDestinationNotFound: _destinationNotFound);
+  }
+
+  void _destinationNotFound(ProximiioFeature place) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('The web map has no "${place.title() ?? place.id}".')));
   }
 
   @override

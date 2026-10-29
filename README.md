@@ -4,7 +4,7 @@ An app that shows indoor positioning and the venue map, native and in a wayfindi
 Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
 [`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
-`6.0.0-beta.4`.
+`6.0.0-beta.5`.
 
 ## What it shows
 
@@ -23,8 +23,8 @@ Proximi.io Flutter SDK v6:
 
 - The venue's points of interest that have a title, with a search field, as an app's own exhibitor
   list would show them.
-- Tap a place for its details and **Take me there**: the app opens the Web tab and shows the place as
-  the destination (see the Web tab).
+- Tap a place for its details and **Take me there**: the app opens the Web tab, and the web app routes
+  from the visitor's position to the place (see the Web tab).
 
 **Map tab**
 
@@ -44,8 +44,8 @@ Proximi.io Flutter SDK v6:
   ```
 
   `level` is the floor level from the SDK, or 0 when the position has no floor. The web app ignores
-  a message without `level` and handles at most one position every 3 seconds. The app sends the last
-  position again every 3 seconds, so the web app gets it once its map is ready.
+  a message without `level`. The app sends the last position again every 3 seconds, because a phone
+  standing still reports no new one.
 - With each step the visitor takes, the app sends the direction of walking from PDR
   (`pdrObservations`), in degrees clockwise from north, and the web app turns the position marker:
 
@@ -53,24 +53,21 @@ Proximi.io Flutter SDK v6:
   window.postMessage({"type": "SET_HEADING", "heading": 87.5}, "*");
   ```
 
-  The web app takes it at once, without the 3-second limit. It ignores a heading of 0, so the app
-  sends north as 360. A standing visitor takes no steps, so the marker keeps the last direction.
-- **Take me there** sends the place's feature id:
+  A standing visitor takes no steps, so the marker keeps the last direction.
+- **Take me there** sends the place's feature id, and the web app routes from the visitor's position to
+  it at once:
 
   ```js
   window.postMessage({"type": "SET_DESTINATION", "id": "<feature id>", "start": "current"}, "*");
   ```
 
-  The web app finds the place by its `id`, `title` or `remote_id`, shows it and centres on it. The
-  visitor then picks **Current Location** as the start (the web app remembers it) and taps **Take me
-  there** in the web app. `start: "current"` asks the web app to route from the visitor's position at
-  once; the web app ignores it until it supports it.
-
-  The web app handles messages only once its map is loaded and says nothing back yet, so the app
-  sends the destination every second until the web app's panel shows the place's title, for at most
-  30 seconds. A web app that posts `{"type": "MAP_READY"}` on the `ProximiioHost` JavaScript channel
-  gets the position, the direction and the destination at once; `DESTINATION_SET` or
-  `DESTINATION_NOT_FOUND` there ends the retries.
+  The web app finds the place by its `id`, `title` or `remote_id`. For an app with its own list of
+  exhibitors, `remote_id` set in the Portal to the exhibitor's id is the reliable key: titles can repeat.
+- The web app answers on a JavaScript channel named `ProximiioHost` that the app adds to the web view:
+  `{"type": "MAP_READY"}` once its map is loaded, then `{"type": "DESTINATION_SET", "id": …}` or
+  `{"type": "DESTINATION_NOT_FOUND", "id": …}` for each destination. It keeps what arrives before its
+  map is ready and handles it then. The app sends a destination once the web app said `MAP_READY`, and
+  shows a message when the place is not found.
 
 **Diagnostics tab**
 
