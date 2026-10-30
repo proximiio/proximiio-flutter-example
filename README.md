@@ -4,7 +4,7 @@ An app that shows indoor positioning and the venue map, native and in a wayfindi
 Proximi.io Flutter SDK v6:
 [`flutter_proximiio`](https://github.com/proximiio/flutter-proximiio) and
 [`flutter_proximiio_map`](https://github.com/proximiio/flutter-proximiio-map), both at
-`6.0.0-beta.5`.
+`6.0.0-beta.6`.
 
 ## What it shows
 

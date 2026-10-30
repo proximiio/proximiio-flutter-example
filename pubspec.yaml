@@ -2,7 +2,7 @@ name: proximiio_flutter_example
 description: "Indoor positioning and the venue map with the Proximi.io Flutter SDK v6."
 publish_to: 'none'
 
-version: 1.0.0+5
+version: 1.0.0+6
 
 environment:
   sdk: ^3.12.0
@@ -17,11 +17,11 @@ dependencies:
   flutter_proximiio:
     git:
       url: https://github.com/proximiio/flutter-proximiio
-      ref: 6.0.0-beta.5
+      ref: 6.0.0-beta.6
   flutter_proximiio_map:
     git:
       url: https://github.com/proximiio/flutter-proximiio-map
-      ref: 6.0.0-beta.5
+      ref: 6.0.0-beta.6
   cupertino_icons: ^1.0.8
   webview_flutter: ^4.14.1
   share_plus: ^13.3.1

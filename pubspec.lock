@@ -143,20 +143,20 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6.0.0-beta.5"
-      resolved-ref: "2f390e5b84f0facac2dc570cecaf2f12759dd79f"
+      ref: "6.0.0-beta.6"
+      resolved-ref: ebd16d8842aa994361fcbe79c5e9d80e8a70d2fd
       url: "https://github.com/proximiio/flutter-proximiio"
     source: git
-    version: "6.0.0-beta.5"
+    version: "6.0.0-beta.6"
   flutter_proximiio_map:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6.0.0-beta.5"
-      resolved-ref: "0d3c81fa36b0c91cf7f42fb6343e89638de6c522"
+      ref: "6.0.0-beta.6"
+      resolved-ref: "719aea5c3a1edc5b4178d3afc4d37b3665746409"
       url: "https://github.com/proximiio/flutter-proximiio-map"
     source: git
-    version: "6.0.0-beta.5"
+    version: "6.0.0-beta.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
